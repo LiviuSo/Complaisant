@@ -12,11 +12,13 @@ import android.support.v7.app.AppCompatActivity;
 public abstract class SingleFragmentActivity extends AppCompatActivity {
 
     public abstract Fragment createFragment(int id);
+    public abstract int getLayoutId();
 
+    ///////////////////////////////////////////////////////////////////////////
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_contacts);
+        setContentView(getLayoutId());
 
         FragmentManager fm = getSupportFragmentManager();
         Fragment fragment = fm.findFragmentById(R.id.fragmentContacts);

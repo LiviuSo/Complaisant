@@ -1,5 +1,7 @@
 package com.addonusa.liviu.complaisant;
 
+import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -9,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.addonusa.liviu.complaisant.model.Contact;
 import com.addonusa.liviu.complaisant.model.TestContactsPool;
@@ -23,10 +26,27 @@ public class ContactsFragment extends Fragment {
     private RecyclerView mContactsRecyclerView;
     private List<Contact> mContacts;
     private ContactAdapter mAdapter;
+    private Callbacks mDetailLauncher;
 
     ///////////////////////////////////////////////////////////////////////////
     public static ContactsFragment newInstance() {
         return new ContactsFragment();
+    }
+
+//    @Override
+//    public void onAttach(Context context) {
+//        super.onAttach(context);
+//        mDetailLauncher = (Callbacks)context;
+//    }
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        mDetailLauncher = (Callbacks)activity;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
     }
 
     @Nullable
@@ -56,16 +76,28 @@ public class ContactsFragment extends Fragment {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    private class ContactHolder extends RecyclerView.ViewHolder {
-        TextView mTextViewContactHeader;
+    private class ContactHolder extends RecyclerView.ViewHolder
+            implements View.OnClickListener {
+        private TextView mTextViewContactHeader;
+        private Contact mContact;
 
+        ///////////////////////////////////////////////////////////////////////
         public ContactHolder(View itemView) {
             super(itemView);
             mTextViewContactHeader = (TextView)itemView.findViewById(R.id.textView_contact);
+            itemView.setOnClickListener(this);
         }
 
         public void bindContact(Contact contact) {
+            mContact = contact;
             mTextViewContactHeader.setText(contact.toString());
+        }
+
+        @Override
+        public void onClick(View v) {
+            // Launch ContactDetailActivity
+            mDetailLauncher.onContactSelected(mContact);
+//            Toast.makeText(getActivity(), mContact.toString(), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -98,6 +130,11 @@ public class ContactsFragment extends Fragment {
         public void setContacts(List<Contact> contacts) {
             mContacts = contacts;
         }
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    public interface Callbacks {
+        public void onContactSelected( Contact contact );
     }
 
 } // end class ContactFragment
